@@ -68,7 +68,7 @@ def PrintPrices(AllCal, billCal, names, prices, bill):
     print('TOTTAL CALORIES:{}'.format(billCal))
     input('\n\nPress "Enter" to finish\n')
     cls()
-def Make(TottalProfit):
+def Make(TottalProfit, prod):
     cls()
     Calories = 0
     txtprice = ''
@@ -78,8 +78,8 @@ def Make(TottalProfit):
     global AllCal
     global billCal
     name = ''
-    
-    prod = input('Product ID\n')
+    if prod < 10000000:
+        return 0, 0, 0
     while prod:
         f = open('EveryProduct.txt', 'r')
         for i in f:
@@ -91,12 +91,13 @@ def Make(TottalProfit):
                     txtprice = txtprice.group()
                     txtprice = float(txtprice)
                     name = re.search('[a-zA-Z]+', i)
+                    name = name.group()
                     Calories = re.search(',[0-9]+', i)
                     Calories = re.search('[0-9]+', Calories.group())
                     Calories = Calories.group()
                     Calories = int(Calories)
                     AllCal.append(Calories)
-                    names.append(name.group())
+                    names.append(name)
                     prices.append(txtprice)
                     cls()
                 elif re.search('\$[1-9]+', i):
@@ -105,27 +106,28 @@ def Make(TottalProfit):
                     txtprice = txtprice.group()
                     txtprice = float(txtprice)
                     name = re.search('[a-zA-Z]+', i)
+                    name = name.group()
                     Calories = re.search(',[1-9]+', i)
                     Calories = re.search('[1-9]+', Calories.group())
                     Calories = Calories.group()
                     Calories = int(Calories)
                     AllCal.append(Calories)
-                    names.append(name.group())
+                    names.append(name)
                     prices.append(txtprice)
                     cls()
                     
                     
         f.close()
-        prod = input('Product ID\n')
+        prod = ''
         q = 0
     for i in prices:
         billCal += AllCal[q]
         bill += i
         TottalProfit += i
         q+=1
-   
-def MakeByNum(Num):
-    cls()
+    return txtprice, name, Calories
+def MakeByNum(Num, p, c):
+    '''cls()'''
     global prices
     global names
     global bill
@@ -133,17 +135,17 @@ def MakeByNum(Num):
     global billCal
     
     while Num:
-        p = input('Enter price\n')
+        name = ''
+        p = str(p)
         while re.search(',', p):
             p = input('Enter price\n')
-        c = input('Enter calories\n')
         p = float(p)
         c = int(c)
         prices.append(p)
         AllCal.append(c)
         billCal += c
         bill += p
-        
+        Num = str(Num)
         if Num == '1':
             names.append('Drinks')
         elif Num == '2':
@@ -152,9 +154,9 @@ def MakeByNum(Num):
             names.append('Vegetables')
         elif Num == '4':
             names.append('Snacks')
-        Num = input()
-        cls()
-    
+        Num = 0
+        '''cls()'''
+    return names[len(names)-1], p, c
    
 def main():
     act = input()
@@ -166,10 +168,10 @@ def main():
             AddProducts()
             cls()
         if act == 'New':
-            Make(TottalProfit)
-            cls()
+            print(Make(TottalProfit, input('Product ID\n')))
+            '''cls()'''
         if act == '1' or act == '2' or act == '3' or act == '4':
-            MakeByNum(act)
+            print(MakeByNum(act, input('Enter price\n'), input('Enter calories\n')))
         act  = input()
     PrintPrices(AllCal, billCal, names, prices, bill)
-main()
+
